@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-import { prioritySchema } from './utility.schemas'
-
 const titleNotEmpty = z
 	.string()
 	.trim()
@@ -17,7 +15,7 @@ export const todoSchema = z.object({
 		message: 'Description is too long.',
 	}),
 	completed: z.boolean(),
-	priority: prioritySchema,
+	priority: z.number().int().min(1).max(3),
 })
 
 export const createToDoSchema = todoSchema.omit({ id: true })

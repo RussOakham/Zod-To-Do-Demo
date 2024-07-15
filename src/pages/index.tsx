@@ -4,10 +4,37 @@ import Link from 'next/link'
 
 import { Shell } from '@/components/layouts/shells/shell'
 import { Button } from '@/components/ui/button'
+import { useGetTodosQuery } from '@/services/react-query/queries/get-todos'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+	const {
+		data: todos,
+		isFetching,
+		isError,
+		error,
+		isSuccess,
+	} = useGetTodosQuery()
+
+	if (isFetching && !todos) {
+		return (
+			<main className="flex min-h-screen items-center justify-center">
+				<p>Loading...</p>
+			</main>
+		)
+	}
+
+	if (isError || !isSuccess) {
+		return (
+			<main className="flex min-h-screen items-center justify-center">
+				<p>{error?.message ?? 'Something went wrong'}</p>
+			</main>
+		)
+	}
+
+	console.log(todos)
+
 	return (
 		<main
 			className={`flex min-h-screen flex-col items-center p-24 ${inter.className}`}

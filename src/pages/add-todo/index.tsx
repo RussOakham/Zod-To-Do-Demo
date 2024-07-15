@@ -36,7 +36,7 @@ export default function AddTodo() {
 		defaultValues: {
 			title: '',
 			description: '',
-			priority: 'medium',
+			priority: 1,
 			completed: false,
 		},
 	})
@@ -99,7 +99,7 @@ export default function AddTodo() {
 											<FormLabel className="text-md">Priority</FormLabel>
 											<Select
 												onValueChange={field.onChange}
-												defaultValue={field.value}
+												defaultValue={field.value.toString()}
 											>
 												<FormControl>
 													<SelectTrigger>
@@ -107,9 +107,9 @@ export default function AddTodo() {
 													</SelectTrigger>
 												</FormControl>
 												<SelectContent>
-													<SelectItem value="low">Low</SelectItem>
-													<SelectItem value="medium">Medium</SelectItem>
-													<SelectItem value="high">High</SelectItem>
+													<SelectItem value="1">Low</SelectItem>
+													<SelectItem value="2">Medium</SelectItem>
+													<SelectItem value="3">High</SelectItem>
 												</SelectContent>
 											</Select>
 										</FormItem>
