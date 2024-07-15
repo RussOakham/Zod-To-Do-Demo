@@ -1,3 +1,4 @@
+import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -29,20 +30,30 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { createToDoSchema } from '@/models/todos.schemas'
 import { CreateToDo } from '@/models/todos.types'
+import { useCreateTodoMutation } from '@/services/react-query/mutations/create-todo'
 
 export default function AddTodo() {
+	const [isPending, startTransition] = useTransition()
+	const createTodoMutation = useCreateTodoMutation()
+
 	const form = useForm<CreateToDo>({
 		resolver: zodResolver(createToDoSchema),
 		defaultValues: {
 			title: '',
 			description: '',
-			priority: 1,
+			priority: 'low',
 			completed: false,
 		},
 	})
 
 	const onSubmit = (data: CreateToDo) => {
-		console.log(data)
+		startTransition(() => {
+			createTodoMutation.mutate(data, {
+				onError: (error) => {
+					console.log(error)
+				},
+			})
+		})
 	}
 
 	return (
@@ -99,7 +110,7 @@ export default function AddTodo() {
 											<FormLabel className="text-md">Priority</FormLabel>
 											<Select
 												onValueChange={field.onChange}
-												defaultValue={field.value.toString()}
+												defaultValue={field.value}
 											>
 												<FormControl>
 													<SelectTrigger>
@@ -107,10 +118,11 @@ export default function AddTodo() {
 													</SelectTrigger>
 												</FormControl>
 												<SelectContent>
-													<SelectItem value="1">Low</SelectItem>
-													<SelectItem value="2">Medium</SelectItem>
-													<SelectItem value="3">High</SelectItem>
+													<SelectItem value="low">Low</SelectItem>
+													<SelectItem value="medium">Medium</SelectItem>
+													<SelectItem value="high">High</SelectItem>
 												</SelectContent>
+												<FormMessage />
 											</Select>
 										</FormItem>
 									)}
@@ -120,6 +132,7 @@ export default function AddTodo() {
 									variant="default"
 									size="lg"
 									className="w-full max-w-4xl"
+									disabled={isPending}
 								>
 									Submit
 								</Button>

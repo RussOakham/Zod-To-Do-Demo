@@ -19,7 +19,7 @@ model Todo {
   title       String
   description String   @db.VarChar(250)
   completed   Boolean
-  priority    Int      @default(0)
+  priority    String   @default("low")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

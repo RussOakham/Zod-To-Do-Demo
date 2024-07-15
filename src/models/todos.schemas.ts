@@ -15,7 +15,13 @@ export const todoSchema = z.object({
 		message: 'Description is too long.',
 	}),
 	completed: z.boolean(),
-	priority: z.number().int().min(1).max(3),
+	priority: z.string(),
+	createdAt: z.string().date(),
+	updatedAt: z.string().date(),
 })
 
-export const createToDoSchema = todoSchema.omit({ id: true })
+export const createToDoSchema = todoSchema.omit({
+	id: true,
+	createdAt: true,
+	updatedAt: true,
+})

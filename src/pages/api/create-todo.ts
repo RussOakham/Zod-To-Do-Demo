@@ -21,6 +21,11 @@ export default async function handler(
 
 		const { title, description, completed, priority } = req.body as CreateToDo
 
+		if (!title || !description || !priority) {
+			res.status(400).send({ message: 'Bad Request' })
+			return
+		}
+
 		const todo = await db.todo.create({
 			data: {
 				title,
@@ -30,12 +35,17 @@ export default async function handler(
 			},
 		})
 
-		if (!title || !description || !completed) {
-			res.status(400).send({ message: 'Bad Request' })
-			return
+		const returnTodo = {
+			id: todo.id,
+			title: todo.title,
+			description: todo.description,
+			completed: todo.completed,
+			priority: todo.priority,
+			createdAt: todo.createdAt.toString(),
+			updatedAt: todo.updatedAt.toString(),
 		}
 
-		res.status(201).json(todo)
+		res.status(201).json(returnTodo)
 	} catch (err: unknown) {
 		console.log((err as Error).message)
 		res.status(500).send({ message: 'Internal Server Error' })
