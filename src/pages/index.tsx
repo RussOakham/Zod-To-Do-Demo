@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Shell } from '@/components/layouts/shells/shell'
 import ToDoCard from '@/components/todo-cards/todo-card'
 import { Button } from '@/components/ui/button'
-import { logger } from '@/lib/pino'
+import { logger } from '@/lib/logger'
 import { standardizedError } from '@/lib/utils'
 import { useGetTodosQuery } from '@/services/react-query/queries/get-todos'
 

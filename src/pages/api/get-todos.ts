@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { db } from '@/database/prisma'
-import { logger } from '@/lib/pino'
+import { logger } from '@/lib/logger'
 import { standardizedError } from '@/lib/utils'
 import { todosSchema } from '@/models/todos.schemas'
 import { type ToDo } from '@/models/todos.types'
