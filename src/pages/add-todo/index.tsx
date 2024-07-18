@@ -1,9 +1,10 @@
 import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
 
 import { Shell } from '@/components/layouts/shells/shell'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
 	Card,
 	CardContent,
@@ -28,6 +29,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import { createToDoSchema } from '@/models/todos.schemas'
 import { CreateToDo } from '@/models/todos.types'
 import { useCreateTodoMutation } from '@/services/react-query/mutations/create-todo'
@@ -41,7 +43,7 @@ export default function AddTodo() {
 		defaultValues: {
 			title: '',
 			description: '',
-			priority: 'low',
+			priority: 'Low',
 			completed: false,
 		},
 	})
@@ -58,6 +60,18 @@ export default function AddTodo() {
 
 	return (
 		<Shell variant="default" className="max-w-6xl">
+			<Link
+				href="/"
+				className={cn(
+					buttonVariants({
+						variant: 'link',
+						size: 'sm',
+						className: 'flex justify-end',
+					}),
+				)}
+			>
+				&larr; Back to Home
+			</Link>
 			<Card className="max-w-5xl">
 				<CardHeader>
 					<CardTitle>Create To Do</CardTitle>
@@ -114,13 +128,13 @@ export default function AddTodo() {
 											>
 												<FormControl>
 													<SelectTrigger>
-														<SelectValue>{field.value}</SelectValue>
+														<SelectValue>{}</SelectValue>
 													</SelectTrigger>
 												</FormControl>
 												<SelectContent>
-													<SelectItem value="low">Low</SelectItem>
-													<SelectItem value="medium">Medium</SelectItem>
-													<SelectItem value="high">High</SelectItem>
+													<SelectItem value="Low">Low</SelectItem>
+													<SelectItem value="Medium">Medium</SelectItem>
+													<SelectItem value="High">High</SelectItem>
 												</SelectContent>
 												<FormMessage />
 											</Select>

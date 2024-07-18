@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import Link from 'next/link'
 
 import { Shell } from '@/components/layouts/shells/shell'
+import ToDoCard from '@/components/todo-cards/todo-card'
 import { Button } from '@/components/ui/button'
 import { useGetTodosQuery } from '@/services/react-query/queries/get-todos'
 
@@ -52,6 +53,10 @@ export default function Home() {
 						<span className="sr-only">Add To Do</span>
 					</Link>
 				</Button>
+
+				{todos.map((todo) => {
+					return <ToDoCard key={todo.id} todo={todo} />
+				})}
 			</Shell>
 		</main>
 	)
