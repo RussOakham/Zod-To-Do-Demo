@@ -28,13 +28,12 @@ export default function Home() {
 
 	if (isError || !isSuccess) {
 		return (
-			<main className="flex min-h-screen items-center justify-center">
+			<main className="flex min-h-screen flex-col items-center justify-center">
+				<h1>Oops!</h1>
 				<p>{error?.message ?? 'Something went wrong'}</p>
 			</main>
 		)
 	}
-
-	console.log(todos)
 
 	return (
 		<main

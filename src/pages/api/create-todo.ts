@@ -35,7 +35,7 @@ export default async function handler(
 			},
 		})
 
-		const returnTodo = {
+		const returnTodo: ToDo = {
 			id: todo.id,
 			title: todo.title,
 			description: todo.description,
