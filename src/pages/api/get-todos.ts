@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { db } from '@/database/prisma'
+import { logger } from '@/lib/pino'
+import { standardizedError } from '@/lib/utils'
 import { todosSchema } from '@/models/todos.schemas'
 import { type ToDo } from '@/models/todos.types'
 
@@ -34,11 +36,9 @@ export default async function handler(
 	const schemaValidation = todosSchema.safeParse(formatTodos)
 
 	if (!schemaValidation.success) {
-		const { errors } = schemaValidation.error
+		const err = standardizedError(schemaValidation.error)
 
-		const errorString = errors.map((error) => error.message).join(', ')
-
-		res.status(400).json({ message: `Bad Request: ${errorString}` })
+		logger.error(`endpoint: /api/get-todos: ${err.message}`)
 	}
 
 	res.status(200).json(formatTodos)
