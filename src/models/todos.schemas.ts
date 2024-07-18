@@ -16,7 +16,7 @@ export const todoSchema = z.object({
 	}),
 	completed: z.boolean(),
 	priority: z.string(),
-	createdAt: z.string().date(),
+	createdAt: z.string(),
 	updatedAt: z.string(),
 })
 
