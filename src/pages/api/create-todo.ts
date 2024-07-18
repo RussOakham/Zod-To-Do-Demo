@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { db } from '@/database/prisma'
+import { logger } from '@/lib/logger'
+import { standardizedError } from '@/lib/utils'
 import { type CreateToDo, type ToDo } from '@/models/todos.types'
 
 interface ErrorMessage {
@@ -47,7 +49,10 @@ export default async function handler(
 
 		res.status(201).json(returnTodo)
 	} catch (err: unknown) {
-		console.log((err as Error).message)
-		res.status(500).send({ message: 'Internal Server Error' })
+		const error = standardizedError(err)
+
+		logger.error(`endpoint: /api/get-todos: ${error.message}`)
+
+		res.status(500).send({ message: `Internal Server Error: ${error.message}` })
 	}
 }

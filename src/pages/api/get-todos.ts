@@ -16,30 +16,38 @@ export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse<ToDo[] | ErrorMessage>,
 ) {
-	if (!allowedMethods.includes(req.method ?? '')) {
-		res.status(405).send({ message: 'Method Not Allowed' })
-		return
+	try {
+		if (!allowedMethods.includes(req.method ?? '')) {
+			res.status(405).send({ message: 'Method Not Allowed' })
+			return
+		}
+
+		const todos = await db.todo.findMany()
+
+		const formatTodos: ToDo[] = todos.map((todo) => ({
+			id: todo.id,
+			title: todo.title,
+			description: todo.description,
+			completed: todo.completed,
+			priority: todo.priority,
+			createdAt: todo.createdAt.toString(),
+			updatedAt: todo.updatedAt.toString(),
+		}))
+
+		const schemaValidation = todosSchema.safeParse(formatTodos)
+
+		if (!schemaValidation.success) {
+			const err = standardizedError(schemaValidation.error)
+
+			logger.error(`endpoint: /api/get-todos: ${err.message}`)
+		}
+
+		res.status(200).json(formatTodos)
+	} catch (err: unknown) {
+		const error = standardizedError(err)
+
+		logger.error(`endpoint: /api/get-todos: ${error.message}`)
+
+		res.status(500).send({ message: `Internal Server Error: ${error.message}` })
 	}
-
-	const todos = await db.todo.findMany()
-
-	const formatTodos: ToDo[] = todos.map((todo) => ({
-		id: todo.id,
-		title: todo.title,
-		description: todo.description,
-		completed: todo.completed,
-		priority: todo.priority,
-		createdAt: todo.createdAt.toString(),
-		updatedAt: todo.updatedAt.toString(),
-	}))
-
-	const schemaValidation = todosSchema.safeParse(formatTodos)
-
-	if (!schemaValidation.success) {
-		const err = standardizedError(schemaValidation.error)
-
-		logger.error(`endpoint: /api/get-todos: ${err.message}`)
-	}
-
-	res.status(200).json(formatTodos)
 }
