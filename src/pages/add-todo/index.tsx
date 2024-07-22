@@ -2,6 +2,8 @@ import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { toast } from 'sonner'
 
 import { Shell } from '@/components/layouts/shells/shell'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -29,13 +31,15 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
+import { logger } from '@/lib/logger'
+import { cn, standardizedError } from '@/lib/utils'
 import { createToDoSchema } from '@/models/todos.schemas'
 import { CreateToDo } from '@/models/todos.types'
 import { useCreateTodoMutation } from '@/services/react-query/mutations/create-todo'
 
 export default function AddTodo() {
 	const [isPending, startTransition] = useTransition()
+	const router = useRouter()
 	const createTodoMutation = useCreateTodoMutation()
 
 	const form = useForm<CreateToDo>({
@@ -51,8 +55,15 @@ export default function AddTodo() {
 	const onSubmit = (data: CreateToDo) => {
 		startTransition(() => {
 			createTodoMutation.mutate(data, {
-				onError: (error) => {
-					console.log(error)
+				onError: (err) => {
+					const error = standardizedError(err)
+					toast.error('Failed to create to do item')
+					logger.error(`Failed to create to do item: ${error.message}`)
+				},
+				onSuccess: () => {
+					router.push('/').catch(() => {
+						logger.error('Failed to navigate to home page')
+					})
 				},
 			})
 		})

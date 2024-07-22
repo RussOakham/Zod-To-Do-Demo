@@ -8,6 +8,7 @@ const titleNotEmpty = z
 	})
 	.max(50, { message: 'Title is too long.' })
 
+// READ
 export const todoSchema = z.object({
 	id: z.string(),
 	title: z.string().pipe(titleNotEmpty),
@@ -22,8 +23,22 @@ export const todoSchema = z.object({
 
 export const todosSchema = z.array(todoSchema)
 
+// CREATE
 export const createToDoSchema = todoSchema.omit({
 	id: true,
 	createdAt: true,
 	updatedAt: true,
+})
+
+// UPDATE
+export const updateToDoSchema = todoSchema.pick({
+	title: true,
+	description: true,
+	completed: true,
+	priority: true,
+})
+
+// DELETE
+export const deleteToDoSchema = todoSchema.pick({
+	id: true,
 })

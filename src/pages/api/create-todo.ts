@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/database/prisma'
 import { logger } from '@/lib/logger'
 import { standardizedError } from '@/lib/utils'
+import { createToDoSchema, todoSchema } from '@/models/todos.schemas'
 import { type CreateToDo, type ToDo } from '@/models/todos.types'
 
 interface ErrorMessage {
@@ -17,14 +18,37 @@ export default async function handler(
 ) {
 	try {
 		if (!allowedMethods.includes(req.method ?? '')) {
-			res.status(405).send({ message: 'Method Not Allowed' })
+			res
+				.status(405)
+				.send({ message: 'endpoint: /api/create-todo - Method Not Allowed' })
 			return
 		}
 
 		const { title, description, completed, priority } = req.body as CreateToDo
 
 		if (!title || !description || !priority) {
-			res.status(400).send({ message: 'Bad Request' })
+			res
+				.status(400)
+				.send({
+					message:
+						'endpoint: /api/create-todo - Bad Request: Required elements not present',
+				})
+			return
+		}
+
+		const schemaValidation = createToDoSchema.safeParse({
+			title,
+			description,
+			completed,
+			priority,
+		})
+
+		if (!schemaValidation.success) {
+			const error = standardizedError(schemaValidation.error)
+			logger.error(`endpoint: /api/create-todo: ${error.message}`)
+			res.status(400).send({
+				message: `endpoint: /api/create-todo - Bad Request: ${error.message}`,
+			})
 			return
 		}
 
@@ -36,6 +60,13 @@ export default async function handler(
 				priority,
 			},
 		})
+
+		const responseSchemaValidation = todoSchema.safeParse(todo)
+
+		if (!responseSchemaValidation.success) {
+			const error = standardizedError(responseSchemaValidation.error)
+			logger.error(`endpoint: /api/create-todo: ${error.message}`)
+		}
 
 		const returnTodo: ToDo = {
 			id: todo.id,
@@ -51,8 +82,12 @@ export default async function handler(
 	} catch (err: unknown) {
 		const error = standardizedError(err)
 
-		logger.error(`endpoint: /api/get-todos: ${error.message}`)
+		logger.error(`endpoint: /api/create-todo: ${error.message}`)
 
-		res.status(500).send({ message: `Internal Server Error: ${error.message}` })
+		res
+			.status(500)
+			.send({
+				message: `endpoint: /api/create-todo - Internal Server Error: ${error.message}`,
+			})
 	}
 }
